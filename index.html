@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>支配者のいないルール — Bitcoin Concept Album</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=JetBrains+Mono:wght@400;500&family=Shippori+Mincho:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --serif: 'Cormorant Garamond', 'Shippori Mincho', serif;
+    --jp: 'Shippori Mincho', serif;
+    --mono: 'JetBrains Mono', monospace;
+
+    --paper-outer: #b8b09a;
+    --paper-inner: #c8bd9a;
+    --paper-secondary: #b8ad8a;
+    --paper-light: #d8c890;
+    --paper-warm: #f4f0e0;
+
+    --ink: #2a2010;
+    --ink-soft: #3a2f1a;
+    --ink-mid: #6a5a3a;
+    --ink-dim: #8a7a5a;
+
+    --accent-red: #8a3525;
+    --accent-yellow: #c4a548;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: var(--paper-outer);
+    font-family: var(--mono);
+    color: var(--ink);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+  .frame {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 1.25rem;
+    position: relative;
+    min-height: 100vh;
+  }
+  .frame::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' seed='7'/><feColorMatrix values='0 0 0 0 0.25  0 0 0 0 0.2  0 0 0 0 0.12  0 0 0 0.4 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.45;
+    mix-blend-mode: multiply;
+  }
+  .jcard {
+    position: relative;
+    z-index: 2;
+    background: var(--paper-inner);
+    border: 1px solid #4a3f28;
+    box-shadow: 4px 4px 0 rgba(58, 48, 30, 0.25), inset 0 0 60px rgba(120, 95, 50, 0.15);
+    transform: rotate(-0.12deg);
+    overflow: hidden;
+  }
+  .jcard::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='3' seed='11'/><feColorMatrix values='0 0 0 0 0.3  0 0 0 0 0.25  0 0 0 0 0.15  0 0 0 0.35 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    pointer-events: none;
+    opacity: 0.55;
+    mix-blend-mode: multiply;
+  }
+  .stains {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.5;
+    mix-blend-mode: multiply;
+  }
+
+  /* hero zone */
+  .hero {
+    position: relative;
+    padding: 1.75rem 1.5rem 1.5rem;
+  }
+  .stamp {
+    position: absolute;
+    top: 0.65rem;
+    right: 0.65rem;
+    width: 56px;
+    height: 56px;
+    border: 2px solid var(--accent-red);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: rotate(-14deg);
+    opacity: 0.65;
+    font-family: var(--mono);
+    font-size: 8px;
+    line-height: 1.1;
+    color: var(--accent-red);
+    text-align: center;
+    letter-spacing: 0.05em;
+    font-weight: 500;
+  }
+  .label-strip {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px dashed #4a3f28;
+    margin-bottom: 1rem;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    line-height: 1.5;
+    color: var(--ink-soft);
+  }
+  .label-strip p { margin: 0; }
+  .label-strip .sub { color: var(--ink-mid); font-size: 9px; margin-top: 0.18rem; }
+  .title-block {
+    margin-bottom: 1.5rem;
+    position: relative;
+  }
+  .title-block .kicker {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    color: var(--ink-mid);
+    margin-bottom: 0.5rem;
+  }
+  h1.main {
+    font-family: var(--mono);
+    font-size: 38px;
+    font-weight: 500;
+    line-height: 0.92;
+    letter-spacing: -0.025em;
+    text-transform: uppercase;
+    color: var(--ink);
+    position: relative;
+  }
+  .star {
+    position: absolute;
+    top: -6px;
+    transform: rotate(20deg);
+  }
+  .jp-title {
+    display: inline-block;
+    margin-top: 0.7rem;
+    background: var(--accent-yellow);
+    padding: 0.12rem 0.5rem;
+    font-family: var(--serif);
+    font-size: 22px;
+    font-style: italic;
+    letter-spacing: 0.04em;
+    color: var(--ink);
+    opacity: 0.92;
+  }
+
+  /* cassette stage */
+  .cassette-wrap {
+    display: flex;
+    justify-content: center;
+    margin: 1.5rem 0 1rem;
+    position: relative;
+  }
+  .cassette-stage {
+    position: relative;
+    width: 100%;
+    max-width: 380px;
+    aspect-ratio: 3 / 2;
+  }
+  .cassette-stage svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(3px 4px 5px rgba(40, 30, 15, 0.35));
+  }
+  .play-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: rgba(196, 165, 72, 0.94);
+    border: 2px solid var(--ink);
+    cursor: pointer;
+    box-shadow: 0 0 0 4px rgba(42, 32, 16, 0.15), 2px 3px 0 rgba(40, 30, 15, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: transform 0.18s ease, background 0.2s, box-shadow 0.18s ease;
+    z-index: 10;
+  }
+  .play-btn:hover {
+    transform: translate(-50%, -50%) scale(1.06);
+  }
+  .play-btn.is-pressed {
+    transform: translate(-50%, -50%) scale(0.94);
+    box-shadow: 0 0 0 4px rgba(42, 32, 16, 0.15), 1px 1px 0 rgba(40, 30, 15, 0.5);
+  }
+  .play-btn:focus { outline: none; }
+  .play-btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; }
+
+  .counter-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, calc(-50% + 64px));
+    background: #1a1410;
+    color: var(--accent-yellow);
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 0.15rem 0.55rem;
+    letter-spacing: 0.15em;
+    border: 0.5px solid var(--accent-yellow);
+    opacity: 0.92;
+    z-index: 9;
+  }
+
+  /* below-stage actions */
+  .actions {
+    display: flex;
+    justify-content: center;
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+  }
+  .actions button {
+    background: transparent;
+    color: var(--ink);
+    border: 1.5px solid var(--ink);
+    padding: 0.55rem 1.2rem;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .actions button:nth-child(1) { transform: rotate(-0.3deg); }
+  .actions button:nth-child(2) { transform: rotate(0.4deg); }
+
+  .scroll-hint {
+    display: flex;
+    justify-content: center;
+    padding-top: 0.5rem;
+    border-top: 1px dashed #4a3f28;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    color: var(--ink-mid);
+  }
+
+  /* below-fold */
+  .below {
+    border-top: 2px dashed #4a3f28;
+    padding: 1.5rem;
+    background: linear-gradient(180deg, var(--paper-inner) 0%, var(--paper-secondary) 100%);
+    position: relative;
+  }
+  .below::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='3' seed='13'/><feColorMatrix values='0 0 0 0 0.3  0 0 0 0 0.25  0 0 0 0 0.15  0 0 0 0.35 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    opacity: 0.5;
+    pointer-events: none;
+    mix-blend-mode: multiply;
+  }
+  .below > * { position: relative; }
+
+  .section-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    margin-bottom: 0.75rem;
+    color: var(--ink-mid);
+  }
+
+  .tracklist {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+  .side-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.35rem;
+    border-bottom: 1.5px solid var(--ink);
+  }
+  .side-tag {
+    background: var(--ink);
+    color: var(--paper-light);
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 0.12rem 0.45rem;
+    letter-spacing: 0.15em;
+    font-weight: 500;
+  }
+  .side-theme {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--ink-mid);
+    letter-spacing: 0.1em;
+  }
+  ol.side-list {
+    margin: 0;
+    padding-left: 1.4rem;
+    font-family: var(--mono);
+    font-size: 11px;
+    line-height: 1.8;
+    color: var(--ink);
+  }
+  ol.side-list .ready { font-weight: 500; }
+  ol.side-list .pending { color: var(--ink-dim); }
+
+  .source-tape {
+    background: #1a1410;
+    color: var(--paper-inner);
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.25rem;
+    transform: rotate(0.2deg);
+    font-family: var(--mono);
+    font-size: 11px;
+    line-height: 1.7;
+    position: relative;
+  }
+  .source-tape .tag {
+    position: absolute;
+    top: -7px;
+    left: 1.2rem;
+    background: var(--accent-red);
+    color: var(--paper-light);
+    padding: 0.1rem 0.5rem;
+    font-size: 8px;
+    letter-spacing: 0.2em;
+    font-weight: 500;
+  }
+  .source-tape .quote {
+    margin-top: 0.4rem;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 13px;
+    color: var(--paper-light);
+  }
+  .source-tape .credit {
+    margin-top: 0.5rem;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--accent-yellow);
+  }
+
+  .liner {
+    border: 1px solid var(--ink);
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.25rem;
+    background: rgba(216, 200, 144, 0.45);
+    font-family: var(--serif);
+    font-size: 13px;
+    line-height: 1.85;
+    transform: rotate(0.1deg);
+  }
+  .liner .body { color: var(--ink); margin-top: 0; }
+  .liner .closing { color: var(--ink-mid); font-style: italic; }
+
+  .badges {
+    display: flex;
+    gap: 0.4rem;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .badge {
+    padding: 0.18rem 0.5rem;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    display: inline-block;
+  }
+  .badge.dark { background: var(--ink); color: var(--paper-light); transform: rotate(-1deg); }
+  .badge.red { background: var(--accent-red); color: #f0e4b8; transform: rotate(0.6deg); }
+  .badge.yellow { background: var(--accent-yellow); color: var(--ink); border: 1px solid var(--ink); transform: rotate(-0.7deg); }
+  .badge.outline { background: transparent; color: var(--ink); border: 1px dashed var(--ink); transform: rotate(0.8deg); }
+  a.badge { text-decoration: none; cursor: pointer; display: inline-flex; align-items: center; gap: 0.28rem; }
+  a.badge:hover { opacity: 0.65; }
+
+  .footer-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 0.6rem;
+    margin-top: 0.6rem;
+    border-top: 1px dashed #4a3f28;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--ink);
+  }
+  .footer-row .tip { color: var(--accent-red); font-weight: 500; }
+
+  /* animations */
+  @keyframes spinReel {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  @keyframes startupSpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(180deg); }
+  }
+
+  /* reel overlays */
+  .reel-wrap {
+    position: absolute;
+    width: 8%;
+    aspect-ratio: 1 / 1;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+  #leftReel  { left: 29%; top: 48%; }
+  #rightReel { left: 71.5%; top: 48%; }
+  .reel-svg {
+    width: 100%;
+    height: 100%;
+  }
+  .is-starting .reel-svg {
+    animation: startupSpin 0.5s linear forwards;
+    transform-origin: center;
+  }
+  .is-playing .reel-svg {
+    animation: spinReel 4s linear infinite;
+    transform-origin: center;
+  }
+
+  ol.side-list li[data-track] { cursor: pointer; transition: color 0.15s; }
+  ol.side-list li[data-track].ready:hover { color: var(--accent-red); }
+  ol.side-list li[data-track].is-active { color: var(--accent-red); font-weight: 500; }
+  ol.side-list li.is-playing-track::before {
+    content: "再生中";
+    background: var(--accent-red);
+    color: var(--paper-light);
+    font-size: 8px;
+    letter-spacing: 0.08em;
+    padding: 0.08rem 0.38rem;
+    margin-right: 0.45rem;
+    vertical-align: middle;
+    display: inline-block;
+    line-height: 1.6;
+  }
+  .track-meta {
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    color: var(--ink-dim);
+    font-weight: 400;
+  }
+  .track-single { color: var(--accent-yellow); }
+
+  .lyrics-hint {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--ink-dim);
+  }
+  .lyrics-verse {
+    font-family: var(--serif);
+    font-size: 13px;
+    line-height: 2.1;
+    color: var(--ink);
+    margin-bottom: 1em;
+    white-space: pre-line;
+  }
+  .lyrics-verse:last-child { margin-bottom: 0; }
+  .lyrics-pending {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    color: var(--ink-dim);
+  }
+
+  .below {
+    transition: transform 0.38s ease-in;
+  }
+  .dl-all-btn {
+    display: block;
+    width: 100%;
+    background: var(--ink);
+    color: var(--paper-light);
+    border: none;
+    padding: 0.65rem 1rem;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    font-weight: 500;
+    cursor: pointer;
+    margin-bottom: 1.25rem;
+    transform: rotate(-0.2deg);
+    transition: opacity 0.15s;
+  }
+  .dl-all-btn:hover { opacity: 0.85; }
+  .dl-link {
+    color: var(--ink);
+    text-decoration: none;
+    border-bottom: 1px dashed var(--ink-mid);
+  }
+  .dl-link:hover { color: var(--accent-red); border-color: var(--accent-red); }
+  .source-link {
+    color: var(--accent-yellow);
+    text-decoration: none;
+    border-bottom: 1px dashed rgba(196,165,72,0.45);
+  }
+  .source-link:hover { opacity: 0.75; }
+
+  /* tips modal */
+  .tips-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: rgba(20, 14, 7, 0.88);
+    align-items: center;
+    justify-content: center;
+  }
+  .tips-modal.is-open { display: flex; }
+  .tips-box {
+    background: #1a1410;
+    border: 1px solid var(--accent-yellow);
+    padding: 1.75rem 2rem 1.5rem;
+    text-align: center;
+    position: relative;
+    max-width: 280px;
+    width: 90%;
+    box-shadow: 0 0 40px rgba(196, 165, 72, 0.15);
+  }
+  .tips-box img {
+    display: block;
+    margin: 0 auto 1rem;
+  }
+  .tips-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--accent-yellow);
+    margin-bottom: 0.4rem;
+  }
+  .tips-address {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--paper-inner);
+  }
+  .tips-close {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.65rem;
+    background: transparent;
+    border: none;
+    color: var(--ink-dim);
+    font-family: var(--mono);
+    font-size: 16px;
+    cursor: pointer;
+    line-height: 1;
+  }
+  .tips-close:hover { color: var(--accent-yellow); }
+  .tip { cursor: pointer; }
+  .tip:hover { opacity: 0.75; }
+
+  @media (max-width: 540px) {
+    .frame { padding: 1rem; }
+    h1.main { font-size: 30px; }
+    .jp-title { font-size: 18px; }
+    .tracklist { grid-template-columns: 1fr; gap: 0.75rem; }
+  }
+</style>
+</head>
+<body>
+<main class="frame">
+<div class="jcard">
+
+  <!-- atmospheric stains -->
+  <svg class="stains" preserveAspectRatio="none" viewBox="0 0 100 100">
+    <ellipse cx="15" cy="20" rx="6" ry="4" fill="#8a6a35" opacity="0.18"/>
+    <ellipse cx="88" cy="75" rx="5" ry="3.5" fill="#6a5025" opacity="0.15"/>
+    <ellipse cx="55" cy="92" rx="8" ry="2" fill="#7a5a30" opacity="0.12"/>
+  </svg>
+
+  <!-- HERO -->
+  <div class="hero">
+
+    <div class="stamp">DUB<br/>ME<br/>★</div>
+
+    <div class="label-strip">
+      <div>
+        <p style="font-weight: 500;">KATAKOTO TAPES // No.001</p>
+        <p class="sub">[ HOMEMADE / SOVEREIGN / DUB FREELY ]</p>
+      </div>
+    </div>
+
+    <div class="title-block">
+      <p class="kicker">// A BITCOIN CONCEPT ALBUM —</p>
+      <h1 class="main">RULES<br/>WITHOUT<br/>RULERS
+        <svg class="star" width="13" height="13" viewBox="0 0 14 14" style="right: 95px;">
+          <path d="M7 1 L8.5 5 L13 5.5 L9.5 8.5 L11 13 L7 10.5 L3 13 L4.5 8.5 L1 5.5 L5.5 5 Z" fill="#8a3525" stroke="#2a2010" stroke-width="0.4" opacity="0.85"/>
+        </svg>
+      </h1>
+      <span class="jp-title">支配者のいないルール</span>
+    </div>
+
+    <div class="cassette-wrap">
+      <div class="cassette-stage" id="cassetteStage">
+
+        <img src="cassette.png" alt="cassette" style="width:100%;height:100%;object-fit:contain;filter:drop-shadow(3px 4px 5px rgba(40,30,15,0.35));display:block;"/>
+
+        <div class="reel-wrap" id="leftReel">
+          <svg class="reel-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="49" fill="rgba(232,225,213,0.88)" stroke="rgba(155,145,130,0.55)" stroke-width="1.5"/>
+            <circle cx="50"    cy="23.6"  r="8.5" fill="rgba(20,14,7,0.78)"/>
+            <circle cx="75.12" cy="41.84" r="8.5" fill="rgba(20,14,7,0.78)"/>
+            <circle cx="65.52" cy="71.37" r="8.5" fill="rgba(20,14,7,0.78)"/>
+            <circle cx="34.48" cy="71.37" r="8.5" fill="rgba(20,14,7,0.78)"/>
+            <circle cx="24.88" cy="41.84" r="8.5" fill="rgba(20,14,7,0.78)"/>
+            <circle cx="50"    cy="50"    r="5"   fill="rgba(20,14,7,0.88)"/>
+          </svg>
+        </div>
+
+        <div class="reel-wrap" id="rightReel">
+          <svg class="reel-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="49" fill="rgba(232,225,213,0.88)" stroke="rgba(155,145,130,0.55)" stroke-width="1.5"/>
+            <circle cx="50"    cy="23.6"  r="8.5" fill="rgba(20,14,7,0.78)"/>
+            <circle cx="75.12" cy="41.84" r="8.5" fill="rgba(20,14,7,0.78)"/>
+            <circle cx="65.52" cy="71.37" r="8.5" fill="rgba(20,14,7,0.78)"/>
+            <circle cx="34.48" cy="71.37" r="8.5" fill="rgba(20,14,7,0.78)"/>
+            <circle cx="24.88" cy="41.84" r="8.5" fill="rgba(20,14,7,0.78)"/>
+            <circle cx="50"    cy="50"    r="5"   fill="rgba(20,14,7,0.88)"/>
+          </svg>
+        </div>
+
+        <button class="play-btn" id="playBtn" aria-label="Play side A">
+          <svg id="playIcon" width="22" height="22" viewBox="0 0 22 22">
+            <polygon points="6,4 6,18 18,11" fill="#2a2010"/>
+          </svg>
+        </button>
+
+        <div class="counter-overlay" id="counterOverlay">
+          <span id="timeDisplay">00:00</span> / <span id="totalDisplay">--:--</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button id="downloadBtn">DOWNLOAD</button>
+    </div>
+
+    <div class="scroll-hint">
+      <span>SCROLL ↓ FOR LYRICS</span>
+    </div>
+
+  </div>
+
+  <!-- BELOW THE FOLD -->
+  <div class="below" id="belowSection">
+
+    <!-- 表面 -->
+    <div id="frontSide">
+
+      <p class="section-label">— TRACKLIST/8 SONGS —</p>
+
+      <div class="tracklist">
+        <div>
+          <div class="side-header">
+            <span class="side-tag">SIDE A</span>
+          </div>
+          <ol class="side-list">
+            <li class="ready" data-track="1">お金のインターネット <span class="track-meta">(Synthpop/112 BPM)</span></li>
+            <li class="ready" data-track="2">Don't Trust, Verify <span class="track-meta">(Trip-hop/86 BPM)</span></li>
+            <li class="ready" data-track="3">支配者のいないルール <span class="track-meta">(Hip-Hop/86 BPM)</span></li>
+            <li class="ready" data-track="4">Not Your Keys, Not Your Coins <span class="track-meta">(Industrial/98 BPM)</span></li>
+          </ol>
+        </div>
+        <div>
+          <div class="side-header">
+            <span class="side-tag">SIDE B</span>
+          </div>
+          <ol class="side-list" start="5">
+            <li class="ready" data-track="5">Cypherpank Writes Code <span class="track-meta">(Emo Rock/138 BPM)</span></li>
+            <li class="ready" data-track="6">許可なんて要らない <span class="track-meta">(Punk/178 BPM)</span></li>
+            <li class="ready" data-track="7">銀行なき者たちへ <span class="track-meta">(Folk/78 BPM)</span></li>
+            <li class="ready" data-track="8">火を運ぶ者たち <span class="track-meta">(Post-Rock/70 BPM)</span></li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="source-tape">
+        <span class="tag">SOURCE TAPE</span>
+        <p class="quote" id="sourceTapeQuote">「ビットコインはインターネットのお金ではない。"お金の"インターネットである。」</p>
+        <p class="credit" id="sourceTapeCredit">▸ <a class="source-link" href="https://spotlight.soy/detail?article_id=zjwpx9g78" target="_blank" rel="noopener">A. ANTONOPOULOS / 2016</a></p>
+      </div>
+
+      <div class="liner" id="lyricsPanel">
+        <p class="section-label" id="lyricsTitle" style="margin-bottom: 0.5rem;">— LYRICS —</p>
+        <div id="lyricsBody">
+          <p class="lyrics-hint">↑ トラックをクリックして歌詞を表示</p>
+        </div>
+      </div>
+
+      <div class="badges">
+        <span class="badge dark">CYPHERPUNK</span>
+        <span class="badge red">日本語</span>
+        <span class="badge yellow">SELF-HOSTED</span>
+        <span class="badge outline">8 TRACKS/2026</span>
+        <a class="badge outline" href="https://x.com/katakoto" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="11" height="11"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.74l7.73-8.835L1.254 2.25H8.08l4.261 5.638 5.902-5.638zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          <span style="font-size:0.7em;opacity:0.7;">a.k.a Twitter</span>
+        </a>
+        <a class="badge outline" href="https://www.youtube.com/@katakoto5653" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="11" height="11"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+          YouTube
+        </a>
+      </div>
+
+      <div class="footer-row">
+        <span>KATAKOTO.ORG</span>
+        <span class="tip">⚡ TIPS@KATAKOTO.ORG</span>
+      </div>
+
+    </div><!-- /frontSide -->
+
+    <!-- 裏面 -->
+    <div id="backSide" style="display:none;">
+
+      <p class="section-label">— FREE DOWNLOAD —</p>
+
+      <div class="source-tape" style="margin-bottom:1.25rem;">
+        <span class="tag">DUB FREELY</span>
+        <p class="quote">ダビングは自由。No Permission Needed.</p>
+        <p class="credit">▸ KATAKOTO TAPES // No.001</p>
+      </div>
+
+      <button id="dlAllBtn" class="dl-all-btn">⬇ 全曲ダウンロード</button>
+
+      <div class="tracklist">
+        <div>
+          <div class="side-header"><span class="side-tag">SIDE A</span></div>
+          <ol class="side-list">
+            <li><a class="dl-link" href="audio/01-the-internet-of-money.mp3" download>お金のインターネット</a></li>
+            <li><a class="dl-link" href="audio/02-dont-trust-verify.mp3" download>Don't Trust, Verify</a></li>
+            <li><a class="dl-link" href="audio/03-rules-without-rulers.mp3" download>支配者のいないルール</a></li>
+            <li><a class="dl-link" href="audio/04-not-your-keys-not-your-coins.mp3" download>Not Your Keys, Not Your Coins</a></li>
+          </ol>
+        </div>
+        <div>
+          <div class="side-header"><span class="side-tag">SIDE B</span></div>
+          <ol class="side-list" start="5">
+            <li><a class="dl-link" href="audio/05-cypherpunk-writes-code.mp3" download>Cypherpank Writes Code</a></li>
+            <li><a class="dl-link" href="audio/06-no-permission-needed.mp3" download>許可なんて要らない</a></li>
+            <li><a class="dl-link" href="audio/07-bitcoin-banks-the-unbanked.mp3" download>銀行なき者たちへ</a></li>
+            <li><a class="dl-link" href="audio/08-the-fire-of-prometheus.mp3" download>火を運ぶ者たち</a></li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="footer-row" style="margin-top:1.25rem;">
+        <span>KATAKOTO.ORG</span>
+        <span class="tip">⚡ TIPS@KATAKOTO.ORG</span>
+      </div>
+
+    </div><!-- /backSide -->
+
+  </div>
+
+</div>
+</main>
+
+<!-- Tips QR Modal -->
+<div id="tipsModal" class="tips-modal" role="dialog" aria-modal="true">
+  <div class="tips-box">
+    <button class="tips-close" id="tipsClose" aria-label="閉じる">✕</button>
+    <p class="tips-label">⚡ LIGHTNING TIPS</p>
+    <img id="tipsQR" src="data:image/svg+xml,%3Csvg%20width%3D%2231mm%22%20height%3D%2231mm%22%20version%3D%221.1%22%20viewBox%3D%220%200%2031%2031%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M1%2C1H2V2H1zM2%2C1H3V2H2zM3%2C1H4V2H3zM4%2C1H5V2H4zM5%2C1H6V2H5zM6%2C1H7V2H6zM7%2C1H8V2H7zM9%2C1H10V2H9zM14%2C1H15V2H14zM15%2C1H16V2H15zM16%2C1H17V2H16zM19%2C1H20V2H19zM23%2C1H24V2H23zM24%2C1H25V2H24zM25%2C1H26V2H25zM26%2C1H27V2H26zM27%2C1H28V2H27zM28%2C1H29V2H28zM29%2C1H30V2H29zM1%2C2H2V3H1zM7%2C2H8V3H7zM11%2C2H12V3H11zM12%2C2H13V3H12zM13%2C2H14V3H13zM16%2C2H17V3H16zM18%2C2H19V3H18zM19%2C2H20V3H19zM23%2C2H24V3H23zM29%2C2H30V3H29zM1%2C3H2V4H1zM3%2C3H4V4H3zM4%2C3H5V4H4zM5%2C3H6V4H5zM7%2C3H8V4H7zM9%2C3H10V4H9zM11%2C3H12V4H11zM14%2C3H15V4H14zM18%2C3H19V4H18zM20%2C3H21V4H20zM23%2C3H24V4H23zM25%2C3H26V4H25zM26%2C3H27V4H26zM27%2C3H28V4H27zM29%2C3H30V4H29zM1%2C4H2V5H1zM3%2C4H4V5H3zM4%2C4H5V5H4zM5%2C4H6V5H5zM7%2C4H8V5H7zM10%2C4H11V5H10zM11%2C4H12V5H11zM12%2C4H13V5H12zM16%2C4H17V5H16zM17%2C4H18V5H17zM18%2C4H19V5H18zM21%2C4H22V5H21zM23%2C4H24V5H23zM25%2C4H26V5H25zM26%2C4H27V5H26zM27%2C4H28V5H27zM29%2C4H30V5H29zM1%2C5H2V6H1zM3%2C5H4V6H3zM4%2C5H5V6H4zM5%2C5H6V6H5zM7%2C5H8V6H7zM10%2C5H11V6H10zM16%2C5H17V6H16zM17%2C5H18V6H17zM19%2C5H20V6H19zM23%2C5H24V6H23zM25%2C5H26V6H25zM26%2C5H27V6H26zM27%2C5H28V6H27zM29%2C5H30V6H29zM1%2C6H2V7H1zM7%2C6H8V7H7zM9%2C6H10V7H9zM12%2C6H13V7H12zM13%2C6H14V7H13zM14%2C6H15V7H14zM15%2C6H16V7H15zM17%2C6H18V7H17zM18%2C6H19V7H18zM19%2C6H20V7H19zM21%2C6H22V7H21zM23%2C6H24V7H23zM29%2C6H30V7H29zM1%2C7H2V8H1zM2%2C7H3V8H2zM3%2C7H4V8H3zM4%2C7H5V8H4zM5%2C7H6V8H5zM6%2C7H7V8H6zM7%2C7H8V8H7zM9%2C7H10V8H9zM11%2C7H12V8H11zM13%2C7H14V8H13zM15%2C7H16V8H15zM17%2C7H18V8H17zM19%2C7H20V8H19zM21%2C7H22V8H21zM23%2C7H24V8H23zM24%2C7H25V8H24zM25%2C7H26V8H25zM26%2C7H27V8H26zM27%2C7H28V8H27zM28%2C7H29V8H28zM29%2C7H30V8H29zM12%2C8H13V9H12zM14%2C8H15V9H14zM20%2C8H21V9H20zM21%2C8H22V9H21zM1%2C9H2V10H1zM3%2C9H4V10H3zM7%2C9H8V10H7zM8%2C9H9V10H8zM14%2C9H15V10H14zM16%2C9H17V10H16zM17%2C9H18V10H17zM21%2C9H22V10H21zM24%2C9H25V10H24zM27%2C9H28V10H27zM29%2C9H30V10H29zM1%2C10H2V11H1zM2%2C10H3V11H2zM6%2C10H7V11H6zM8%2C10H9V11H8zM9%2C10H10V11H9zM10%2C10H11V11H10zM11%2C10H12V11H11zM13%2C10H14V11H13zM17%2C10H18V11H17zM18%2C10H19V11H18zM20%2C10H21V11H20zM21%2C10H22V11H21zM22%2C10H23V11H22zM23%2C10H24V11H23zM24%2C10H25V11H24zM27%2C10H28V11H27zM29%2C10H30V11H29zM1%2C11H2V12H1zM3%2C11H4V12H3zM4%2C11H5V12H4zM7%2C11H8V12H7zM10%2C11H11V12H10zM12%2C11H13V12H12zM13%2C11H14V12H13zM14%2C11H15V12H14zM15%2C11H16V12H15zM17%2C11H18V12H17zM20%2C11H21V12H20zM22%2C11H23V12H22zM23%2C11H24V12H23zM25%2C11H26V12H25zM26%2C11H27V12H26zM27%2C11H28V12H27zM29%2C11H30V12H29zM1%2C12H2V13H1zM3%2C12H4V13H3zM6%2C12H7V13H6zM9%2C12H10V13H9zM12%2C12H13V13H12zM13%2C12H14V13H13zM15%2C12H16V13H15zM16%2C12H17V13H16zM17%2C12H18V13H17zM19%2C12H20V13H19zM20%2C12H21V13H20zM25%2C12H26V13H25zM26%2C12H27V13H26zM28%2C12H29V13H28zM29%2C12H30V13H29zM1%2C13H2V14H1zM4%2C13H5V14H4zM6%2C13H7V14H6zM7%2C13H8V14H7zM8%2C13H9V14H8zM9%2C13H10V14H9zM10%2C13H11V14H10zM13%2C13H14V14H13zM14%2C13H15V14H14zM15%2C13H16V14H15zM21%2C13H22V14H21zM23%2C13H24V14H23zM24%2C13H25V14H24zM29%2C13H30V14H29zM1%2C14H2V15H1zM2%2C14H3V15H2zM5%2C14H6V15H5zM6%2C14H7V15H6zM9%2C14H10V15H9zM10%2C14H11V15H10zM14%2C14H15V15H14zM15%2C14H16V15H15zM19%2C14H20V15H19zM20%2C14H21V15H20zM21%2C14H22V15H21zM22%2C14H23V15H22zM23%2C14H24V15H23zM24%2C14H25V15H24zM26%2C14H27V15H26zM29%2C14H30V15H29zM7%2C15H8V16H7zM8%2C15H9V16H8zM9%2C15H10V16H9zM11%2C15H12V16H11zM12%2C15H13V16H12zM16%2C15H17V16H16zM19%2C15H20V16H19zM20%2C15H21V16H20zM22%2C15H23V16H22zM23%2C15H24V16H23zM24%2C15H25V16H24zM25%2C15H26V16H25zM26%2C15H27V16H26zM27%2C15H28V16H27zM29%2C15H30V16H29zM2%2C16H3V17H2zM3%2C16H4V17H3zM8%2C16H9V17H8zM9%2C16H10V17H9zM10%2C16H11V17H10zM11%2C16H12V17H11zM14%2C16H15V17H14zM22%2C16H23V17H22zM23%2C16H24V17H23zM24%2C16H25V17H24zM26%2C16H27V17H26zM28%2C16H29V17H28zM1%2C17H2V18H1zM6%2C17H7V18H6zM7%2C17H8V18H7zM8%2C17H9V18H8zM9%2C17H10V18H9zM13%2C17H14V18H13zM14%2C17H15V18H14zM16%2C17H17V18H16zM17%2C17H18V18H17zM20%2C17H21V18H20zM21%2C17H22V18H21zM23%2C17H24V18H23zM26%2C17H27V18H26zM28%2C17H29V18H28zM4%2C18H5V19H4zM6%2C18H7V19H6zM10%2C18H11V19H10zM11%2C18H12V19H11zM12%2C18H13V19H12zM13%2C18H14V19H13zM17%2C18H18V19H17zM20%2C18H21V19H20zM21%2C18H22V19H21zM24%2C18H25V19H24zM26%2C18H27V19H26zM27%2C18H28V19H27zM29%2C18H30V19H29zM1%2C19H2V20H1zM2%2C19H3V20H2zM3%2C19H4V20H3zM5%2C19H6V20H5zM6%2C19H7V20H6zM7%2C19H8V20H7zM8%2C19H9V20H8zM10%2C19H11V20H10zM14%2C19H15V20H14zM15%2C19H16V20H15zM17%2C19H18V20H17zM20%2C19H21V20H20zM21%2C19H22V20H21zM22%2C19H23V20H22zM23%2C19H24V20H23zM24%2C19H25V20H24zM26%2C19H27V20H26zM29%2C19H30V20H29zM4%2C20H5V21H4zM5%2C20H6V21H5zM8%2C20H9V21H8zM10%2C20H11V21H10zM11%2C20H12V21H11zM15%2C20H16V21H15zM16%2C20H17V21H16zM17%2C20H18V21H17zM19%2C20H20V21H19zM21%2C20H22V21H21zM25%2C20H26V21H25zM26%2C20H27V21H26zM1%2C21H2V22H1zM2%2C21H3V22H2zM5%2C21H6V22H5zM7%2C21H8V22H7zM9%2C21H10V22H9zM11%2C21H12V22H11zM12%2C21H13V22H12zM13%2C21H14V22H13zM14%2C21H15V22H14zM15%2C21H16V22H15zM18%2C21H19V22H18zM19%2C21H20V22H19zM20%2C21H21V22H20zM21%2C21H22V22H21zM22%2C21H23V22H22zM23%2C21H24V22H23zM24%2C21H25V22H24zM25%2C21H26V22H25zM26%2C21H27V22H26zM9%2C22H10V23H9zM11%2C22H12V23H11zM14%2C22H15V23H14zM15%2C22H16V23H15zM18%2C22H19V23H18zM20%2C22H21V23H20zM21%2C22H22V23H21zM25%2C22H26V23H25zM27%2C22H28V23H27zM29%2C22H30V23H29zM1%2C23H2V24H1zM2%2C23H3V24H2zM3%2C23H4V24H3zM4%2C23H5V24H4zM5%2C23H6V24H5zM6%2C23H7V24H6zM7%2C23H8V24H7zM9%2C23H10V24H9zM12%2C23H13V24H12zM16%2C23H17V24H16zM21%2C23H22V24H21zM23%2C23H24V24H23zM25%2C23H26V24H25zM27%2C23H28V24H27zM29%2C23H30V24H29zM1%2C24H2V25H1zM7%2C24H8V25H7zM13%2C24H14V25H13zM14%2C24H15V25H14zM18%2C24H19V25H18zM20%2C24H21V25H20zM21%2C24H22V25H21zM25%2C24H26V25H25zM26%2C24H27V25H26zM28%2C24H29V25H28zM29%2C24H30V25H29zM1%2C25H2V26H1zM3%2C25H4V26H3zM4%2C25H5V26H4zM5%2C25H6V26H5zM7%2C25H8V26H7zM10%2C25H11V26H10zM12%2C25H13V26H12zM14%2C25H15V26H14zM16%2C25H17V26H16zM17%2C25H18V26H17zM18%2C25H19V26H18zM20%2C25H21V26H20zM21%2C25H22V26H21zM22%2C25H23V26H22zM23%2C25H24V26H23zM24%2C25H25V26H24zM25%2C25H26V26H25zM26%2C25H27V26H26zM28%2C25H29V26H28zM1%2C26H2V27H1zM3%2C26H4V27H3zM4%2C26H5V27H4zM5%2C26H6V27H5zM7%2C26H8V27H7zM10%2C26H11V27H10zM17%2C26H18V27H17zM20%2C26H21V27H20zM22%2C26H23V27H22zM24%2C26H25V27H24zM25%2C26H26V27H25zM26%2C26H27V27H26zM27%2C26H28V27H27zM28%2C26H29V27H28zM1%2C27H2V28H1zM3%2C27H4V28H3zM4%2C27H5V28H4zM5%2C27H6V28H5zM7%2C27H8V28H7zM9%2C27H10V28H9zM10%2C27H11V28H10zM14%2C27H15V28H14zM15%2C27H16V28H15zM17%2C27H18V28H17zM18%2C27H19V28H18zM19%2C27H20V28H19zM20%2C27H21V28H20zM21%2C27H22V28H21zM22%2C27H23V28H22zM24%2C27H25V28H24zM25%2C27H26V28H25zM26%2C27H28V28H26zM28%2C27H29V28H28zM29%2C27H30V28H29zM1%2C28H2V29H1zM7%2C28H8V29H7zM10%2C28H11V29H10zM11%2C28H12V29H11zM12%2C28H13V29H12zM15%2C28H16V29H15zM16%2C28H17V29H16zM17%2C28H18V29H17zM19%2C28H20V29H19zM21%2C28H22V29H21zM23%2C28H24V29H23zM24%2C28H25V29H24zM25%2C28H26V29H25zM26%2C28H27V29H26zM1%2C29H2V30H1zM2%2C29H3V30H2zM3%2C29H4V30H3zM4%2C29H5V30H4zM5%2C29H6V30H5zM6%2C29H7V30H6zM7%2C29H8V30H7zM9%2C29H10V30H9zM10%2C29H11V30H10zM11%2C29H12V30H11zM13%2C29H14V30H13zM14%2C29H15V30H14zM15%2C29H16V30H15zM18%2C29H19V30H18zM19%2C29H20V30H19zM21%2C29H22V30H21zM25%2C29H26V30H25zM26%2C29H27V30H26zM29%2C29H30V30H29z%22%20id%3D%22qr-path%22%20fill%3D%22%23000000%22%20fill-opacity%3D%221%22%20fill-rule%3D%22nonzero%22%20stroke%3D%22none%22/%3E%3C/svg%3E" alt="tips@katakoto.org QR" width="200" height="200" style="background:#f4f0e0;display:block;margin:0 auto 1rem;border:6px solid #f4f0e0;"/>
+    <p class="tips-address">tips@katakoto.org</p>
+  </div>
+</div>
+
+<script>
+  (function () {
+    // --- DOM ---
+    const stage      = document.getElementById('cassetteStage');
+    const btn        = document.getElementById('playBtn');
+    const icon       = document.getElementById('playIcon');
+    const timeEl     = document.getElementById('timeDisplay');
+    const totalEl    = document.getElementById('totalDisplay');
+    const titleEl    = document.getElementById('lyricsTitle');
+    const bodyEl     = document.getElementById('lyricsBody');
+    const tapeQuote  = document.getElementById('sourceTapeQuote');
+    const tapeCredit = document.getElementById('sourceTapeCredit');
+
+    // --- Audio ---
+    const audio = new Audio();
+    audio.preload = 'metadata';
+
+    const AUDIO_MAP = {
+      1: 'audio/01-the-internet-of-money.mp3',
+      2: 'audio/02-dont-trust-verify.mp3',
+      3: 'audio/03-rules-without-rulers.mp3',
+      4: 'audio/04-not-your-keys-not-your-coins.mp3',
+      5: 'audio/05-cypherpunk-writes-code.mp3',
+      6: 'audio/06-no-permission-needed.mp3',
+      7: 'audio/07-bitcoin-banks-the-unbanked.mp3',
+      8: 'audio/08-the-fire-of-prometheus.mp3'
+    };
+
+    // --- State ---
+    let playing      = false;
+    let currentTrack = 1;
+
+    // --- Helpers ---
+    const PLAY  = '<polygon points="6,4 6,18 18,11" fill="#2a2010"/>';
+    const PAUSE = '<rect x="6" y="4" width="3.5" height="14" fill="#2a2010"/><rect x="12.5" y="4" width="3.5" height="14" fill="#2a2010"/>';
+
+    function fmt(s) {
+      if (!isFinite(s) || isNaN(s)) return '--:--';
+      s = Math.floor(s);
+      return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+    }
+
+    // --- Audio load ---
+    function loadTrack(num) {
+      const src = AUDIO_MAP[num];
+      if (!src) return;
+      if (playing) stopSequence();
+      currentTrack = num;
+      audio.src = src;
+      timeEl.textContent  = '00:00';
+      totalEl.textContent = '--:--';
+    }
+
+    audio.addEventListener('loadedmetadata', () => {
+      totalEl.textContent = fmt(audio.duration);
+    });
+    audio.addEventListener('timeupdate', () => {
+      timeEl.textContent = fmt(audio.currentTime);
+    });
+    audio.addEventListener('ended', () => {
+      let next = currentTrack + 1;
+      while (next <= 8 && !AUDIO_MAP[next]) next++;
+      if (next <= 8 && AUDIO_MAP[next]) {
+        currentTrack = next;
+        timeEl.textContent  = '00:00';
+        totalEl.textContent = '--:--';
+        showLyrics(next);
+        setPlayingMark(next);
+        audio.src = AUDIO_MAP[next];
+        audio.play().catch(() => {});
+      } else {
+        stopSequence();
+        audio.src = AUDIO_MAP[1];
+        currentTrack = 1;
+        timeEl.textContent = '00:00';
+      }
+    });
+
+    loadTrack(1);
+
+    // --- Player sequences ---
+    function setPlayingMark(num) {
+      document.querySelectorAll('.side-list li[data-track]').forEach(li => li.classList.remove('is-playing-track'));
+      if (num) {
+        const li = document.querySelector('.side-list li[data-track="' + num + '"]');
+        if (li) li.classList.add('is-playing-track');
+      }
+    }
+
+    function startupSequence() {
+      btn.classList.add('is-pressed');
+      icon.innerHTML = PAUSE;
+
+      setTimeout(() => btn.classList.remove('is-pressed'), 200);
+      setTimeout(() => stage.classList.add('is-starting'), 200);
+      setTimeout(() => {
+        stage.classList.remove('is-starting');
+        stage.classList.add('is-playing');
+        if (AUDIO_MAP[currentTrack]) {
+          audio.play().catch(() => {});
+          setPlayingMark(currentTrack);
+        }
+      }, 1000);
+    }
+
+    function stopSequence() {
+      playing = false;
+      icon.innerHTML = PLAY;
+      stage.classList.remove('is-playing', 'is-starting');
+      audio.pause();
+      setPlayingMark(null);
+    }
+
+    btn.addEventListener('click', () => {
+      playing = !playing;
+      if (playing) {
+        if (audio.currentTime > 0) {
+          startupSequence(); // ポーズ位置から再開
+        } else {
+          loadTrack(1);
+          showLyrics(1);
+          startupSequence(); // Track 1 から新規スタート
+        }
+      } else {
+        stopSequence();
+      }
+    });
+
+    // --- Lyrics ---
+    const LYRICS = {
+      1: {
+        title: 'A-1/お金のインターネット',
+        verses: [
+          '（ピーギョロギョロ、ガー…）\n（繋がった、あの日の音）\n（世界が変わった、静かに）',
+          '覚えているか、初めてメールが届いた日\n画面の向こうに 知らない誰かがいた\nそれまでは手紙か、電話か、会いに行くか\n距離が時間に比例していた世界の終わり\n情報が国境を 軽々と越えた\n誰の許可もなく 誰の税関もなく\nそれが1995年頃の 小さな革命だった\n——で、今度は お金の番だ',
+          'ケーブルを伝う 数字の列\nそれは紙幣より軽く 銀行より速い\n気づいているか？　もう始まってる',
+          'お金のインターネット\n国境を知らない 許可を待たない\nお金のインターネット\n時間、365日、止まらない世界\n（お金が、インターネットになる）',
+          'じいちゃんは 銀行に行列を作った世代\n母さんは ATMの登場に驚いた世代\n俺たちは スマホで送金する世代\n次の子どもたちは——　何に驚くだろう',
+          '「え、昔は銀行に行かないと送れなかったの？」\n「え、昔は週末には送金できなかったの？」\n「え、昔は海外送金に4日かかったの？」\n\n笑い話になる日が 静かに近づいている',
+          'ケーブルを伝う 価値の流れ\nそれは距離を知らず 時間を選ばない\n気づいているか？　もう始まってる',
+          'お金のインターネット\n国境を知らない 許可を待たない\nお金のインターネット\n25時間、365日、止まらない世界\n（お金が、インターネットになる）',
+          '1995年、インターネットは\n「なにそれ？」だった\n2011年、SNSは\nただのハヤリだった\n今、Bitcoinは\n「ただのバブル」と呼ばれている\n歴史は、いつも、同じ形で繰り返す\n見えない人には、ずっと見えない\n見える人には、もう、見えている\n（もう、見えている）',
+          'お金のインターネット\n国境を知らない 許可を待たない\nお金のインターネット\n25時間、365日、止まらない世界\nお金のインターネット\n誰のものでもなく みんなのもの\nお金のインターネット\n（もう、始まってる 静かに、確実に）',
+          '（ピーーガーー…）'
+        ]
+      },
+      2: {
+        title: 'A-2/Don\'t Trust, Verify',
+        verses: [
+          '（信じている　信じている）\n（ニュースを　画面を　数字を）\n（信じている　疑わずに）',
+          '朝のニュースが告げる経済の健康\n残高アプリが示す数字の真実\n送金完了の通知、鳴った瞬間の安堵\n——誰が確かめた？　誰が見届けた？\nお前は「見た」んじゃない　「表示された」だけ\n画面と現実の間にある距離を\n俺たちは長いこと忘れて生きてきた\n夜中3時、ノードの音だけが鳴ってる部屋で\n初めて気づく——検証と信頼は違う',
+          'Don\'t trust, verify\n信じるな　確かめろ\nDon\'t trust, verify\n目の前のそれは　本当にそれか',
+          '銀行は「お客様の残高は○円です」と言う\n政府は「インフレ率は○%です」と言う\nニュースは「経済は回復基調です」と言う\n——全て、誰かが書いた台本だ\n署名を確かめたか？　数字の裏を見たか？\n信頼の連鎖は便利だ、でも脆い\n一箇所が嘘なら　全部が嘘になる\nだからBitcoinは　誰も信頼しない設計で作られた\n信頼不要——それが自由の別名',
+          'Don\'t trust, verify\n信じるな　確かめろ\nDon\'t trust, verify\n目の前のそれは　本当にそれか',
+          '検証するというのは\n疑い深くなることじゃない\nただ、自分の目で見るということ\nそれだけの、それだけのこと\n（自分の目で、自分の目で）\n誰かが「真実だ」と言うから真実なんじゃない\n数学が、コードが、ネットワークが\n十分間ごとに世界に刻む\nそれを、誰でも、確かめられる\nそれが革命の静かな形',
+          'Don\'t trust, verify\n信じるな　確かめろ\nDon\'t trust, verify\n目で見たものしか　信じなくていい\nDon\'t trust, verify\n（信じなくていい　もう）\nDon\'t trust, verify',
+          '（確かめろ……確かめろ……）\n（自分の目で……）\n（Don\'t trust……verify……）'
+        ]
+      },
+      3: {
+        title: 'A-3/支配者のいないルール ★',
+        verses: [
+          '支配者なしに 俺たちはルールを持てなかった\n監視なしに 階層なしに 説明責任なしに\n\n......今日までは',
+          '誰かが上で 判子押すのを待つ世界\n誰かが下で頭さげ続ける世界\n\n......今日までは',
+          '秩序の代償は 従順とスタンプ\n自由の対価は いつも誰かの管理\n王が消えれば 暴徒が湧く 歴史の教科書\nだから受け入れた 支配者という保険\nでも保険屋が 一番の詐欺師だった\n気づいた時には 骨まで抜かれてた',
+          'Rules Without Rulers — 支配者のいないルール\n数学が裁く、コードが証す(ソース)\n誰の顔色も、もう要らない\nBitcoin、それが 新しい憲法',
+          '中央銀行 総裁の眉毛ひとつで\n俺の生活が 傾く理不尽\n「信用してくれ」って 声だけがデカい\n信用できないから 信用が要るんだろ\nでもブロックチェーンは 信用を要求しない\n検証しろ 自分のノードで 自分の目で\nDon\'t trust, verify ——これが新しい礼儀\n疑うことが 信頼への一番の近道',
+          'Rules Without Rulers — 支配者のいないルール\n数学が裁く、コードが証す(ソース)\n誰の顔色も、もう要らない\nBitcoin、それが 新しい憲法',
+          '勘違いするな これは無法地帯じゃない\nルールはある 前よりもずっと厳格に\nただし 執行するのは人間じゃない\n2,100万枚 ——交渉の余地なし\n10分ごとに 誰も止められない鐘が鳴る\nそれが秩序だ 王のいない秩序',
+          '自由ってのは 責任と同じ重さ\n自分の鍵を 自分で持つってこと\n誰も助けてくれない それが誇り\n誰にも止められない それが自由\n階層は消えた 監視は消えた\n残ったのは 数学と俺たちと\n10分ごとに 更新される真実\n初めて人類は 王なしで回り始めた',
+          'Rules Without Rulers — 支配者のいないルール\n数学が裁く、コードが証す(ソース)\n誰の顔色も、もう要らない\nBitcoin、それが 新しい憲法\n......Rules Without Rulers......'
+        ]
+      },
+      4: {
+        title: 'A-4/Not Your Keys, Not Your Coins',
+        verses: [
+          '（鍵を…　鍵を…　持ってるか？）\n（Not your keys, not your coins）\n（見たか、あの数字、今朝）',
+          '画面の中の数字を信じてる\n桁(けた)が増える、減る、それだけで一喜一憂\nでも聞けよ——あれは残高じゃねえ\nあれは「預かりShow」、紙切れ一枚\nログインできる間は 自分の金だと錯覚する\nサーバーが落ちた日 初めて気づく、他人(ひと)の金だったと\nMt.Gox、FTX、名前は違えど台本は同じ\n「一時的に出金を停止いたします」——それが遺言状',
+          '俺のもの？　嘘つけ\nお前の鍵、誰が持ってる？\n答えられねえなら 答えは出てる',
+          'Not your keys, not your coins\n証書(かみ)切れば 消える残高(かず)\nNot your keys, not your coins\n証書(かみ)切れば 消える残高(かず)',
+          '「便利」と引き換えに手放したもの、思い出せるか？\nパスワード忘れた、サポートに電話、本人確認——\nその一連、全部「他人(ひと)の許可」を待つ時間\n自分の金を動かすのに なんで頭下げてる\nじいちゃんが戦後、タンス預金した理由、今わかる\n銀行は閉まる、政府は凍結する、歴史は繰り返す\nseed phrase 紙に書いて 金庫に仕舞え\n12個の単語が お前の主権(ちから)の全部',
+          '聞こえてるか？\n鍵、持ってるか？\n（持ってねえなら、それはお前のじゃねえ）',
+          'Not your keys, not your coins\n証書(かみ)切れば 消える残高(かず)\nNot your keys, not your coins\n証書(かみ)切れば 消える残高(かず)',
+          '便利と主権は トレードオフ\n片方取れば 片方は消える\nどっち選ぶかは お前の自由だ\nでも選んでる自覚だけは 持っとけ\n（自覚だけは、持っとけ）\n（持っとけ、持っとけ、持っとけ）',
+          'Not your keys, not your coins!\n証書(かみ)切れば 消える残高(かず)\nNot your keys, not your coins!\n証書(かみ)切れば 消える残高(かず)\nNot your keys, not your coins!\n（まだ間に合う うちに）\nNot your keys, not your coins\n証書(かみ)切れば 消える残高(かず)',
+          '聞こえてるか？\n鍵、持ってるか？\n（持ってねえなら、それはお前のじゃねえ）',
+          'Not your keys, not your coins\n（鍵を…　鍵を…　持ってるか？）\n（持ってねえなら、それはお前のじゃねえ）\n（……Not your keys……not your coins…）'
+        ]
+      },
+      5: {
+        title: 'B-1/Cypherpank Writes Code',
+        verses: [
+          '（聞こえてるか）\n（聞いちゃいないだろうな）\n（それでいい）',
+          '深夜2時、自分の部屋\n親には内緒で開けたノートPC\n画面の青い光だけが世界の全部\n誰かに認められたくて、誰にも認められなくて\n学校では喋らない、でも頭の中はうるさい\n教科書の余白に意味のないコード書いてた\nあれが何になるのか、自分でも知らなかった\n—— 14歳の俺は、まだ知らなかったんだ',
+          'ねえ、聞いてるか\n今そこにいる 14歳の誰か\nお前が世界を変えるガワだって\nお前自身がまだ知らないだけ\n昼の校舎の屋上でぼーっとしてる奴も\n教室の隅で本読んでる奴も\n全員、候補者なんだ',
+          '1991年、Linus Torvaldsは21歳でLinuxを書いた\n2000年、Aaron Swartzは14歳でRSSを書いた\nにせんはちねん、Satoshiが何歳だったかは誰も知らない\nでも確かなのは——彼ら全員、誰かに「無理だ」と言われた側\n彼ら全員、世界が眠っている時間にコードを書いていた\nAaronは26歳で自身の火を消す、火は消されたのか\nいや、彼の火は消えていない、引き継がれる\nお前のキーボードに、今、その火が乗っている',
+          'ねえ、聞いてるか\n今そこにいる14歳の誰か\nお前が世界を変える側だって\nお前自身がまだ知らないだけ\nパソコン触れる奴も、絵を描いてる奴も\nただ毎日学校行くのが辛い奴も\n全員、候補者なんだ',
+          '俺はもう14歳じゃない\nあの頃の感覚はもう、思い出せない\nでも、覚えてるのは\n深夜の部屋で、誰にも見せないコードを書いた感覚\n誰かに認められなくても、続けた、あの夜\nあれは何のためだったのか、今でもわからない\nただ、書かずにいられなかった\n（書かずに、いられなかった）\nお前も今、書かずにいられないなら\nそれで、十分だ\n（それで、いい、それで、いい）',
+          'ねえ、聞いてるか！\n今そこにいる 14歳の誰か\nお前が世界を変えるガワだって\nお前自身がまだ知らないだけ\n深夜の部屋で 画面を見つめる\n名もない君が おれらの未来を書く\n（書いている、今、この瞬間にも）\nねえ、聞いてるか！\n（聞こえてなくていい、ただ、書き続けてくれ2時の部屋で）\n（青い光に照らされた誰かが）\n（今、コードを書いている）\n（Aaronが書いていたように）\n（Satoshiが書いていたように）\n（それで、いい）'
+        ]
+      },
+      6: {
+        title: 'B-2/許可なんて要らない',
+        verses: [
+          '（許可を、求めるな！）\n（許可を、待つな！）\n1, 2, 3, 4!',
+          '銀行で「本人確認させてください」\n役所で「書類が足りません」\n会社で「上司の承認待ち」\nBullshit job、許可待ちで死ぬ\n俺の金を動かすのに　なんで頭下げる？\n俺の人生を生きるのに　なんで頷きを待つ？\nずっと、そうやって、生きてきた\n誰かの許可で、お前の人生は始まらない',
+          '許可なんていらねえ！\n許可なんていらねえ！\n誰の許可も　待たねえ\n俺の喉(ノード)で、俺が叫ぶ\n許可なんていらねえ！\n許可なんていらねえ！',
+          '朝9時、満員電車、死んだ目\n副業するな、就業規則だ\n意見するな、空気を読め\n夢を見るな、現実を見ろ\n全部、誰かが用意した檻だ\nBitcoin はそれを終わらせる\nノードを立てる、許可は要らない\nウォレットを作る、承認は要らない\n送る、受け取る、生きる——許可不要',
+          '許可なんていらねえ！\n許可なんていらねえ！\n誰の許可も　待たねえ\n俺の喉(ノード)で、俺が叫ぶ\n許可なんていらねえ！\n許可なんていらねえ！',
+          'Permissionless——\nそれは、ただの技術用語じゃない\nBullshit job から、抜けだす鍵だ\n誰の頷きもなしに、生きていい',
+          '許可なんていらねえ！\n許可なんていらねえ！\n誰の許可も　待たねえ\n俺の喉(ノード)で、俺が叫ぶ\n許可なんていらねえ！\n許可なんていらねえ！\n（誰の、許可も、いらねえ！）\n許可なんていらねえ！',
+          '（許可を、求めるな）\n（許可を、待つな）\n（生きろ）'
+        ]
+      },
+      7: {
+        title: 'B-3/銀行なき者たちへ',
+        verses: [
+          'ラゴスの若い母親は 銀行に行かない\n給料はスマートフォンで受け取って\n家族に送って、貯金して\n「銀行は信用ならない」と笑って言う\nカラカスのおじいさんは ベッドの下に紙幣を隠してた\n朝起きたら、それは紙くずになっていた\n今は、孫が教えてくれた小さなアプリの中に\n家族の未来を、入れている',
+          '銀行を持たない者たち、と\n俺たちは呼んできた\nでも本当は——\n彼らこそが先に気づいた者たち\n銀行を必要としない、生き方に',
+          'カブールの女性は 銀行口座を作らせてもらえない\n父親の許可、夫の許可、書類の山\nでもQRコードは、誰の許可も求めない\n彼女の電話の中に、彼女の自由が、ある\nブエノスアイレスの大学生は\nペソが明日には半分になると知っている\n教科書代より、貯金より、まず——\n国家を信じない通貨に、人生を入れる',
+          '"Bitcoin banks the unbanked"\n銀行なきものたちの、銀行となる\n17億人を、ただの欠けた数字として呼んできた\nでも本当は——\n彼らこそが先に気づいた者たち\n銀行を必要としない、生き方に',
+          'じいちゃんも、戦争の後\n銀行を信じなかった\nタンスの奥に、札を新聞紙に包んで\n隠していた、と母さんから聞いた\n時代も国も違うけど\n人が「信じられない時」に取る形は、同じだ\n（同じだ、いつも、同じだ）\nただ今は——タンスじゃなくて\n誰にも止められないネットワークに\nそれを、託すことができる',
+          '"Bitcoin banks the unbanked"\n銀行なきものたちの、銀行となる\n銀行を必要としない、生き方に\n俺たちは、後を追っているんだ\n俺たちは、学んでいるんだ',
+          '（ラゴスの母親に）\n（カラカスのおじいさんに）\n（カブールの女性に）\n（未来の、こどもたちに）'
+        ]
+      },
+      8: { title: 'B-4/火を運ぶ者たち', verses: [
+          '（火が、燃えている）\n（誰かが、運んでいる）',
+          'プロメーテウスは\n神から火を盗み\n人類に与えた\nそれまで火は——\n神だけが有するものだった\nサトシは\nお金を、政府と銀行から盗み\n人々に与えた\nもう、後戻りはできない',
+          '初めてBitcoinに触れた日\nジョークか何かだと思った\nでも、何かが、燃えていた\n画面の向こうで、ノードが鳴いていた\n誰かが書いたコードが、世界中で動いていた\n世界の僻地で、マイニング機が唸っていた\n俺の知らない誰かが、火を運んでいた\n誰の許可もなく、誰にも止められず\n（火が、運ばれていた）\n（火が、運ばれていた）',
+          '火を運ぶ\n火を運ぶ\n（俺たちは、火を運ぶ者たち）\n火を運ぶ\n火を運ぶ\n（プロメーテウスの末裔として）\n火を運ぶ\n火を運ぶ\n（永遠に、再創造できる）\n火を運ぶ\n火を運ぶ',
+          '一度、知識を手に入れたら\nその知識は、永遠である\n我々は、永遠に\nビットコインを再創造できる\nシャットダウンは\n（シャットダウンは）\nシャットダウンは——\nもう、できない',
+          '（火が、燃えている）\n（誰かが、運んでいる）\n（今も、どこかで）\n（いつか、誰かが）\n（今も……）\n（………）\n（火が、燃えている）\n（誰かが、運んでいる）'
+        ] }
+    };
+
+    // --- Source Tape ---
+    const SOURCE_TAPE = {
+      1: { quote: '「ビットコインはインターネットのお金ではない。“お金の”インターネットである。」', credit: 'A. ANTONOPOULOS / 2016', url: 'https://spotlight.soy/detail?article_id=zjwpx9g78' },
+      2: { quote: '「Bitcoinの本質とは何だろうか？それは#ブロックチェーンではない。それは誰を信用することもなしに、分散的に運用可能な点にある。権威に訴えることなく、自分自身だけで厳然と独立して、全てを検証できるソフトウェアを利用可能な点にある。」', credit: 'A. ANTONOPOULOS / 2022', url: 'https://x.com/aantonop/status/1504471112087838732' },
+      3: { quote: '「今日に至るまで我々は支配者なしにルールを持つことができなかった。機関による監視・ガイダンス・階層・説明責任といったものなしに、我々はルールを持ちえなかったのだ。#Bitcoin は世界に“支配者のいないルール”(Rules Without Rulers)をもたらす。」', credit: 'A. ANTONOPOULOS / 2020', url: 'https://aantonop.io/ruleswithoutrulers' },
+      4: { quote: '「FTXから学んだ教訓は“FTXは、お金を貯めておくのに安全な場所ではなかった。”ではない。教訓は“いかなる取引所や第三者も、自身のお金を預けるのに信用などできない。” である。#NotYourKeysNotYourCoins」', credit: 'A. ANTONOPOULOS / 2022', url: 'https://x.com/aantonop/status/1602713374659428352' },
+      5: { quote: '「イノベーションは、既存の金融システムからは生まれない。それは、はみ出し者たち、ぶち壊し屋たち、どこにも馴染めない者たちから生まれる。」', credit: 'A. ANTONOPOULOS / 2016', url: null, ref: 'Innovators, Disruptors, Misfits and Bitcoin — TIoM Vol.1 Ch.4' },
+      6: { quote: '「ネット上でアプリを公開するのに誰かの許可を得る必要はない。ITを使って業界をディスラプトするのに誰かにお願いする必要はない。Bitcoinでも新しい金融システムやサービスの発明を誰かにお願いする必要はない。あなたがただやれば良い。あなたがただコードを書けばよい。」', credit: 'A. ANTONOPOULOS / 2016', url: 'https://www.youtube.com/watch?v=LA9A1RyXv9s' },
+      7: { quote: '「Bitcoinは、“皆の携帯に銀行口座を”といった話などではなく、“皆の携帯に自身がCEOの銀行を”という話なのだ。」', credit: 'A. ANTONOPOULOS / 2016', url: 'https://www.youtube.com/watch?v=mRQs9Y6CUSU' },
+      8: { quote: '「プロメーテウスは神から火を盗み人類に与えた。それまで火は神だけが有するものだった。サトシはお金を政府と銀行から盗み人々に与えたのだ。もう後戻りはできない。一度知識を手に入れたら、その知識は永遠である。我々は永遠にビットコインを再創造できる。シャットダウンはもうできない。」', credit: 'A. ANTONOPOULOS / 2016', url: 'https://www.youtube.com/watch?v=4wq7tmLjEa8' }
+    };
+
+    function showSourceTape(num) {
+      const d = SOURCE_TAPE[num];
+      if (!d) return;
+      tapeQuote.textContent = d.quote;
+      if (d.url) {
+        tapeCredit.innerHTML = '▸ <a class="source-link" href="' + d.url + '" target="_blank" rel="noopener">' + d.credit + '</a>';
+      } else {
+        tapeCredit.innerHTML = '▸ ' + d.credit + (d.ref ? '<br/><span style="font-size:9px;letter-spacing:0.1em;color:var(--accent-yellow);opacity:0.7;">' + d.ref + '</span>' : '');
+      }
+    }
+
+    function showLyrics(num) {
+      const d = LYRICS[num];
+      if (!d) return;
+      titleEl.textContent = '— ' + d.title + ' —';
+      bodyEl.innerHTML = d.pending
+        ? '<p class="lyrics-pending">[ RECORDING IN PROGRESS ]</p>'
+        : d.verses.map(v => '<p class="lyrics-verse">' + v.replace(/\n/g, '<br/>') + '</p>').join('');
+      document.querySelectorAll('.side-list li[data-track]').forEach(li => li.classList.remove('is-active'));
+      const active = document.querySelector('.side-list li[data-track="' + num + '"]');
+      if (active) active.classList.add('is-active');
+      showSourceTape(num);
+    }
+
+    document.querySelectorAll('.side-list li[data-track]').forEach(li => {
+      li.addEventListener('click', () => {
+        const num = Number(li.dataset.track);
+        showLyrics(num);
+        loadTrack(num);
+        if (AUDIO_MAP[num]) {
+          playing = true;
+          startupSequence();
+        }
+      });
+    });
+  })();
+
+  // --- Tips QR Modal ---
+  (function () {
+    const modal   = document.getElementById('tipsModal');
+    const closeBtn = document.getElementById('tipsClose');
+    function openModal() {
+      modal.classList.add('is-open');
+    }
+
+    function closeModal() { modal.classList.remove('is-open'); }
+
+    document.querySelectorAll('.tip').forEach(el => {
+      el.addEventListener('click', openModal);
+    });
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+  })();
+
+  // --- Flip animation ---
+  (function () {
+    const below   = document.getElementById('belowSection');
+    const front   = document.getElementById('frontSide');
+    const back    = document.getElementById('backSide');
+    const dlBtn   = document.getElementById('downloadBtn');
+    let flipped   = false;
+    let animating = false;
+
+    function flip() {
+      if (animating) return;
+      animating = true;
+      below.style.transition = 'transform 0.38s ease-in';
+      below.style.transform  = 'perspective(1200px) rotateY(90deg)';
+      setTimeout(() => {
+        if (flipped) {
+          back.style.display  = 'none';
+          front.style.display = '';
+          dlBtn.textContent   = 'DOWNLOAD';
+        } else {
+          front.style.display = 'none';
+          back.style.display  = '';
+          dlBtn.textContent   = '← BACK';
+        }
+        flipped = !flipped;
+        below.style.transition = 'none';
+        below.style.transform  = 'perspective(1200px) rotateY(-90deg)';
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          below.style.transition = 'transform 0.38s ease-out';
+          below.style.transform  = 'perspective(1200px) rotateY(0deg)';
+          setTimeout(() => { animating = false; }, 400);
+        }));
+      }, 380);
+    }
+
+    dlBtn.addEventListener('click', flip);
+
+    // 全曲ダウンロード（ZIP）
+    document.getElementById('dlAllBtn').addEventListener('click', () => {
+      const a = document.createElement('a');
+      a.href = 'audio/RulesWithoutRulers.zip';
+      a.download = 'RulesWithoutRulers.zip';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    });
+  })();
+</script>
+
+</body>
+</html>
